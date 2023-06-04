@@ -24,7 +24,7 @@ def add():
 
     s3_resource = boto3.resource('s3')
     s3_resource.Bucket('your-bucket-name').put_object(Key=file.filename, Body=file)
-    image_url = f"https://your-bucket-name.s3.amazonaws.com/{file.filename}"
+    image_url = f"https://demoblog-store.s3.amazonaws.com/{file.filename}"
 
     post = BlogPost(title=title, content=content, image_url=image_url)
     db.session.add(post)
