@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 import boto3
 import os
 import pymysql
+pymysql.install_as_MySQLdb()  # Add this line
 from botocore.exceptions import ClientError
 
 app = Flask(__name__)
