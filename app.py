@@ -23,7 +23,7 @@ def add():
     file = request.files['image']
 
     s3_resource = boto3.resource('s3')
-    s3_resource.Bucket('your-bucket-name').put_object(Key=file.filename, Body=file)
+    s3_resource.Bucket('demoblog-store').put_object(Key=file.filename, Body=file)
     image_url = f"https://demoblog-store.s3.amazonaws.com/{file.filename}"
 
     post = BlogPost(title=title, content=content, image_url=image_url)
@@ -40,7 +40,7 @@ if __name__ == '__main__':
     rds_db = os.environ['RDS_DB']
 
     # Connect to RDS
-    conn = pymysql.connect(rds_host, user=rds_user, passwd=rds_password, db=rds_db, connect_timeout=5)
+    conn = pymysql.connect(host=rds_host, user=rds_user, passwd=rds_password, db=rds_db, connect_timeout=5)
 
     # Check if table exists
     with conn.cursor() as cur:
