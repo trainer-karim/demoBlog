@@ -6,7 +6,7 @@ import pymysql
 from botocore.exceptions import ClientError
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://admin:admin123*@blogdb.c4zwod0hvwjn.us-east-1.rds.amazonaws.com/dbname'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://admin:admin123*@blogdb.c4zwod0hvwjn.us-east-1.rds.amazonaws.com/blogdb'
 
 db = SQLAlchemy(app)
 
