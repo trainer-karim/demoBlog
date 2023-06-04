@@ -31,7 +31,7 @@ def index():
         if image:
             filename = secure_filename(image.filename)
             image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            #s3 = boto3.client('s3',
+            s3 = boto3.client('s3')
             #    aws_access_key_id='your-access-key',
             #    aws_secret_access_key='your-secret-key'
             #)
