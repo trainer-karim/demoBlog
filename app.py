@@ -12,7 +12,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://admin:admin123*@blogdb.c4zwod0h
 db = SQLAlchemy(app)
 
 class BlogPost(db.Model):
-    __tablename__ = 'blog_post'
+    __tablename__ = 'BlogPost'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     content = db.Column(db.Text, nullable=False)
