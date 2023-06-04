@@ -1,43 +1,62 @@
-from flask import Flask, render_template, request
+from flask import Flask, request, render_template
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.utils import secure_filename
 import boto3
 import os
+from datetime import datetime
 import pymysql
 pymysql.install_as_MySQLdb()  # Add this line
 from botocore.exceptions import ClientError
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://admin:admin123*@blogdb.c4zwod0hvwjn.us-east-1.rds.amazonaws.com/blogdb'
-
+app.config['UPLOAD_FOLDER'] = '/home/ec2-user/demoBlog'
 db = SQLAlchemy(app)
 
-class BlogPost(db.Model):
-    __tablename__ = 'BlogPost'
+class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
+    title = db.Column(db.String(200), nullable=False)
     content = db.Column(db.Text, nullable=False)
-    image_url = db.Column(db.String(500), nullable=False)
+    image_url = db.Column(db.String(500), nullable=True)
+    publish_at = db.Column(db.DateTime, nullable=True)
+    published = db.Column(db.Boolean, default=False)
 
-@app.route('/')
-def home():
-    posts = BlogPost.query.all()
-    return render_template('home.html', posts=posts)
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        title = request.form['title']
+        content = request.form['content']
 
-@app.route('/add', methods=['POST'])
-def add():
-    title = request.form['title']
-    content = request.form['content']
-    file = request.files['image']
+        image = request.files['image']
+        if image:
+            filename = secure_filename(image.filename)
+            image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            #s3 = boto3.client('s3',
+            #    aws_access_key_id='your-access-key',
+            #    aws_secret_access_key='your-secret-key'
+            #)
+            s3.upload_fileobj(image, 'demoblog-store', filename)
+            image_url = f"https://demoblog-store.s3.amazonaws.com/{filename}"
+        else:
+            image_url = None
 
-    s3_resource = boto3.resource('s3')
-    s3_resource.Bucket('demoblog-store').put_object(Key=file.filename, Body=file)
-    image_url = f"https://demoblog-store.s3.amazonaws.com/{file.filename}"
+        publish_at = request.form.get('publish_at')
+        if publish_at:
+            publish_at = datetime.strptime(publish_at, "%Y-%m-%d %H:%M")
 
-    post = BlogPost(title=title, content=content, image_url=image_url)
-    db.session.add(post)
-    db.session.commit()
+        post = Post(title=title, content=content, image_url=image_url, publish_at=publish_at)
+        db.session.add(post)
+        db.session.commit()
 
-    return 'Done'
+        return 'Post created.'
+
+    posts = Post.query.filter(Post.publish_at <= datetime.now(), Post.published == True).all()
+    return render_template('index.html', posts=posts)
+
+
+
+
+
 
 def create_table_if_not_exists():
     # Get RDS details from environment variables
