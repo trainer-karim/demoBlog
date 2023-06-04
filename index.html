@@ -1,19 +1,53 @@
-{% for post in posts %}
-    <h2>{{ post.title }}</h2>
-    <p>{{ post.content }}</p>
-    {% if post.image_url %}
-        <img src="{{ post.image_url }}" alt="Post Image">
-    {% endif %}
-    <p>Scheduled publication time: {{ post.publish_at }}</p>
-{% endfor %}
-<form method="POST" enctype="multipart/form-data">
-    <label for="title">Title:</label>
-    <input type="text" id="title" name="title" required>
-    <label for="content">Content:</label>
-    <textarea id="content" name="content" required></textarea>
-    <label for="image">Image:</label>
-    <input type="file" id="image" name="image">
-    <label for="publish_at">Publish at (YYYY-MM-DD HH:MM):</label>
-    <input type="text" id="publish_at" name="publish_at">
-    <input type="submit" value="Create Post">
-</form>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Blog App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .post {
+            margin: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+        }
+        .post img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Blog App</h1>
+
+    <div id="content">
+        {% for post in posts %}
+        <div class="post">
+            <h2>{{ post.title }}</h2>
+            <p>{{ post.content }}</p>
+            {% if post.image_url %}
+            <img src="{{ post.image_url }}" alt="Image for {{ post.title }}">
+            {% endif %}
+            <p>Scheduled publication time: {{ post.publish_at }}</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <form method="POST" enctype="multipart/form-data">
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" required>
+        <label for="content">Content:</label>
+        <textarea id="content" name="content" required></textarea>
+        <label for="image">Image:</label>
+        <input type="file" id="image" name="image">
+        <label for="publish_at">Publish at (YYYY-MM-DD HH:MM):</label>
+        <input type="text" id="publish_at" name="publish_at">
+        <input type="submit" value="Create Post">
+    </form>
+
+</body>
+</html>
