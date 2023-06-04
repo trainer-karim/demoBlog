@@ -16,11 +16,6 @@ class BlogPost(db.Model):
     content = db.Column(db.Text, nullable=False)
     image_url = db.Column(db.String(500), nullable=False)
 
-@app.route('/')
-def home():
-    posts = BlogPost.query.all()
-    return render_template('home.html', posts=posts)
-
 @app.route('/add', methods=['POST'])
 def add():
     title = request.form['title']
@@ -29,7 +24,7 @@ def add():
 
     s3_resource = boto3.resource('s3')
     s3_resource.Bucket('your-bucket-name').put_object(Key=file.filename, Body=file)
-    image_url = f"https://demoblog-store.s3.amazonaws.com/{file.filename}"
+    image_url = f"https://your-bucket-name.s3.amazonaws.com/{file.filename}"
 
     post = BlogPost(title=title, content=content, image_url=image_url)
     db.session.add(post)
@@ -64,4 +59,10 @@ if __name__ == '__main__':
         except ClientError as e:
             print(f'Failed to create table: {e}')
 
+    @app.route('/')
+    def home():
+        posts = BlogPost.query.all()
+        return render_template('home.html', posts=posts)
+
+    # Run the Flask application after the DB and table verification and setup
     app.run(debug=True, host='0.0.0.0')
