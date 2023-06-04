@@ -51,6 +51,15 @@ def index():
         return 'Post created.'
 
     posts = Post.query.filter(Post.publish_at <= datetime.now(), Post.published == True).all()
+    for post in posts:
+        if post.image_url:
+            # Parse the bucket name and key from the image_url
+            bucket_name = 'demoblog-store'  # replace with your bucket name
+            key = post.image_url.split(f"https://{bucket_name}.s3.amazonaws.com/")[1]
+
+            # Generate a presigned URL for the S3 object
+            post.image_url = s3.generate_presigned_url('get_object', Params={'Bucket': bucket_name, 'Key': key})
+    
     return render_template('index.html', posts=posts)
 
 
